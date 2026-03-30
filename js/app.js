@@ -463,7 +463,11 @@ function initSectionNav() {
   const dotsEl    = document.getElementById('nav-dots');
 
   // Checkpoints fixos — posições ideais do vídeo para cada seção
-  const sections = [0.18, 0.37, 0.56, 0.755, 0.915].map(p => ({ enter: p, leave: p + 0.01 }));
+  const isMobileNav = window.innerWidth <= 768;
+  const checkpoints = isMobileNav
+    ? [0.15, 0.35, 0.54, 0.735, 0.915]   // mobile
+    : [0.18, 0.37, 0.56, 0.755, 0.915];  // desktop
+  const sections = checkpoints.map(p => ({ enter: p, leave: p + 0.01 }));
 
   // Cria dots
   sections.forEach((_, i) => {
