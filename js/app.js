@@ -12,6 +12,13 @@ const FRAME_PATH    = 'frames/frame_%04d.webp';
 const PRELOAD_FIRST = 10;
 const BG_SAMPLE_INT = 20; // re-sample bg color every N frames
 
+// Velocidade do scroll manual (mouse/trackpad) — maior = mais lento
+const SCROLL_DURATION = 1.2;
+
+// Velocidade do scroll ao clicar nas setas de navegação — maior = mais lento
+const NAV_DURATION_DESKTOP = 3;
+const NAV_DURATION_MOBILE  = 2;
+
 /* ── STATE ───────────────────────────────────────────────────── */
 const frames   = new Array(FRAME_COUNT).fill(null);
 let currentFrame = 0;
@@ -160,7 +167,7 @@ function initLenis() {
   if (window.innerWidth <= 768) return;
 
   lenis = new Lenis({
-    duration: 1.2,
+    duration: SCROLL_DURATION,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true
   });
@@ -485,11 +492,17 @@ function initSectionNav() {
     const targetPct    = sections[index].enter;
     const containerTop = scrollEl.offsetTop;
     const targetPx     = containerTop + targetPct * scrollEl.offsetHeight;
+    const duration     = isMobileNav ? NAV_DURATION_MOBILE : NAV_DURATION_DESKTOP;
 
     if (lenis) {
-      lenis.scrollTo(targetPx, { duration: 1.6, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+      lenis.scrollTo(targetPx, { duration, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
     } else {
-      window.scrollTo({ top: targetPx, behavior: 'smooth' });
+      // Mobile: anima manualmente via GSAP para respeitar o NAV_DURATION_MOBILE
+      gsap.to(window, {
+        scrollTo: targetPx,
+        duration,
+        ease: 'power2.inOut'
+      });
     }
   }
 
@@ -541,7 +554,7 @@ function initSectionNav() {
 /* ── BOOTSTRAP ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   // Register GSAP plugin FIRST — before initLenis which references ScrollTrigger
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
   resizeCanvas();
   initLenis();
   initScrollTriggers();
