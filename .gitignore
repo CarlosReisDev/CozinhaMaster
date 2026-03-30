@@ -1,0 +1,36 @@
+# Project-private assistant context
+.claude/
+
+# Temporary files created by FUSE/editor locks
+.fuse_hidden*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.temp
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build/cache folders (future-proof)
+node_modules/
+dist/
+build/
+.cache/
+
+# Optional large source videos (keep rendered assets tracked)
+assets/videos/*.mp4
+assets/videos/*.mov
+assets/videos/*.mkv
