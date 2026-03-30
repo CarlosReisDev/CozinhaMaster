@@ -408,8 +408,8 @@ function initMarquee() {
 function initDarkOverlay() {
   const overlay  = document.getElementById('dark-overlay');
   const scrollEl = document.getElementById('scroll-container');
-  const ENTER    = 0.65;
-  const LEAVE    = 0.86;
+  const ENTER    = 0.60;
+  const LEAVE    = 0.92;
   const FADE_R   = 0.04;
 
   ScrollTrigger.create({
