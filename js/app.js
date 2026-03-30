@@ -79,13 +79,13 @@ function drawFrame(index) {
 
   const isMobile = window.innerWidth <= 768;
   const scale = Math.max(cw / iw, ch / ih) * (isMobile ? IMAGE_SCALE_MOBILE : IMAGE_SCALE);
-  const fillColor = isMobile ? '#000000' : bgColor;
+  
   const dw = iw * scale;
   const dh = ih * scale;
   const dx = (cw - dw) / 2;
   const dy = (ch - dh) / 2;
 
-  ctx.fillStyle = fillColor;
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, cw, ch);
   ctx.drawImage(img, dx, dy, dw, dh);
 }
@@ -254,8 +254,8 @@ function positionSections() {
     sec.style.top = topPx + 'px';
     // No mobile empurra o conteúdo para baixo — data-mobile-y sobrescreve o padrão
     const isMobile = window.innerWidth <= 768;
-    const mobileY  = sec.dataset.mobileY !== undefined ? parseFloat(sec.dataset.mobileY) : -10;
-    gsap.set(sec, { yPercent: isMobile ? mobileY : -10 });
+    const mobileY  = sec.dataset.mobileY !== undefined ? parseFloat(sec.dataset.mobileY) : 0;
+    gsap.set(sec, { yPercent: isMobile ? mobileY : 0 });
   });
 }
 
