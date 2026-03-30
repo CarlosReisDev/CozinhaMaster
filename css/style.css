@@ -167,7 +167,7 @@ img { display: block; max-width: 100%; }
 }
 
 .site-header.scrolled .navbar-pill {
-  background: rgba(10, 10, 10, 0.72);
+  background: rgba(0, 0, 0, 0.72);
   border-color: var(--border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -664,7 +664,7 @@ img { display: block; max-width: 100%; }
 .site-footer {
   position: relative;
   z-index: 20;
-  background: #060606;
+  background: #000000;
   border-top: 1px solid var(--border);
   padding: 5rem 8vw 2.5rem;
 }
@@ -778,47 +778,95 @@ img { display: block; max-width: 100%; }
 /* ── POSITION HELPERS (JS override via inline style) ────────── */
 /* transform is set by GSAP via gsap.set(el, { yPercent: -50 }) — not CSS */
 
+/* ── DARK BACKDROP NOS BLOCOS DE TEXTO ──────────────────────── */
+/* Garante legibilidade sobre o canvas em todas as seções       */
+.section-inner,
+.stats-manifesto,
+.cta-inner {
+  background: rgba(0, 0, 0, 0.58);
+  padding: 2.5rem 2.8rem;
+  border-radius: 2px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 /* ── MOBILE ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #scroll-container { height: 550vh; }
+  /* Scroll container maior para as seções não se empilharem */
+  #scroll-container { height: 650vh; }
 
-  .align-left  { padding: 0 6vw; padding-right: 6vw; }
-  .align-right { padding: 0 6vw; padding-left: 6vw; }
-  .section-inner { max-width: 100%; }
+  /* Seções ocupam a largura toda, sem recuo lateral assimétrico */
+  .scroll-section {
+    align-items: flex-start;
+    padding: 0 5vw !important;
+    justify-content: flex-start !important;
+  }
 
-  .stats-manifesto { max-width: 90vw; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .align-left,
+  .align-right {
+    padding: 0 5vw !important;
+  }
 
-  .cta-inner { max-width: 90vw; }
+  .section-inner {
+    max-width: 100%;
+    width: 100%;
+  }
 
-  .hero-content { max-width: 90vw; }
+  .stats-manifesto {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .cta-inner {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Backdrop levemente mais opaco no mobile para compensar tela menor */
+  .section-inner,
+  .stats-manifesto,
+  .cta-inner {
+    background: rgba(0, 0, 0, 0.72);
+    padding: 1.8rem 1.6rem;
+  }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem 2rem; }
+
+  /* Hero: empurra conteúdo para não conflitar com logo */
+  .hero-content {
+    max-width: 90vw;
+    padding-bottom: 2vh;
+  }
+
   .hero-label { font-size: 0.65rem; }
+
+  /* Logo no hero: esconde no mobile — ocupa espaço demais */
+  .hero-logo-aside { display: none; }
+
+  .hero-scroll-indicator { display: none; }
 
   .navbar-links { display: none; }
 
+  /* Marquee menor no mobile */
+  .marquee-text { font-size: clamp(3.5rem, 18vw, 7rem); }
+
+  /* Footer */
   .footer-inner {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 2rem;
   }
 
   .footer-info {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
   }
 
   .footer-status { align-items: flex-start; }
-
-  .marquee-text { font-size: clamp(4rem, 20vw, 8rem); }
-
-  .section-scroll-section {
-    padding: 0 6vw;
-  }
-
-  .hero-scroll-indicator { display: none; }
 }
 
 @media (max-width: 480px) {
+  #scroll-container { height: 700vh; }
   .footer-info { grid-template-columns: 1fr; }
   .cta-actions { flex-direction: column; }
-  .cta-button { text-align: center; }
+  .cta-button { text-align: center; width: 100%; }
 }

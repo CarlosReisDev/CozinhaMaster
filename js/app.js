@@ -4,9 +4,10 @@
    ============================================================ */
 
 /* ── CONFIG ─────────────────────────────────────────────────── */
-const FRAME_COUNT   = 182;
+const FRAME_COUNT   = 172;
 const FRAME_SPEED   = 1.0;
-const IMAGE_SCALE   = 0.85;
+const IMAGE_SCALE        = 0.85; // desktop
+const IMAGE_SCALE_MOBILE = 0.50; // mobile — mais afastado, mostra mais laterais
 const FRAME_PATH    = 'frames/frame_%04d.webp';
 const PRELOAD_FIRST = 10;
 const BG_SAMPLE_INT = 20; // re-sample bg color every N frames
@@ -76,13 +77,15 @@ function drawFrame(index) {
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
 
-  const scale = Math.max(cw / iw, ch / ih) * IMAGE_SCALE;
+  const isMobile = window.innerWidth <= 768;
+  const scale = Math.max(cw / iw, ch / ih) * (isMobile ? IMAGE_SCALE_MOBILE : IMAGE_SCALE);
+  const fillColor = isMobile ? '#000000' : bgColor;
   const dw = iw * scale;
   const dh = ih * scale;
   const dx = (cw - dw) / 2;
   const dy = (ch - dh) / 2;
 
-  ctx.fillStyle = bgColor;
+  ctx.fillStyle = fillColor;
   ctx.fillRect(0, 0, cw, ch);
   ctx.drawImage(img, dx, dy, dw, dh);
 }
@@ -153,6 +156,9 @@ async function preloadFrames() {
 
 /* ── LENIS SMOOTH SCROLL ─────────────────────────────────────── */
 function initLenis() {
+  // No mobile o Lenis causa frame-jump ao tirar o dedo — ScrollTrigger funciona com scroll nativo sem setup extra
+  if (window.innerWidth <= 768) return;
+
   lenis = new Lenis({
     duration: 1.2,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -246,9 +252,10 @@ function positionSections() {
     const midPct = (enter + leave) / 2;
     const topPx  = midPct * scrollH;
     sec.style.top = topPx + 'px';
-    // GSAP manages the transform — CSS transform is NOT set here to avoid
-    // being overwritten when GSAP animates x/y/scale on children
-    gsap.set(sec, { yPercent: -50 });
+    // No mobile empurra o conteúdo para baixo — data-mobile-y sobrescreve o padrão
+    const isMobile = window.innerWidth <= 768;
+    const mobileY  = sec.dataset.mobileY !== undefined ? parseFloat(sec.dataset.mobileY) : -20;
+    gsap.set(sec, { yPercent: isMobile ? mobileY : -50 });
   });
 }
 
@@ -401,8 +408,8 @@ function initMarquee() {
 function initDarkOverlay() {
   const overlay  = document.getElementById('dark-overlay');
   const scrollEl = document.getElementById('scroll-container');
-  const ENTER    = 0.58;
-  const LEAVE    = 0.80;
+  const ENTER    = 0.65;
+  const LEAVE    = 0.86;
   const FADE_R   = 0.04;
 
   ScrollTrigger.create({
