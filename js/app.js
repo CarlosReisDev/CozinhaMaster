@@ -16,7 +16,7 @@ const BG_SAMPLE_INT = 20; // re-sample bg color every N frames
 const SCROLL_DURATION = 1.2;
 
 // Velocidade do scroll ao clicar nas setas de navegação — maior = mais lento
-const NAV_DURATION_DESKTOP = 3;
+const NAV_DURATION_DESKTOP = 2;
 const NAV_DURATION_MOBILE  = 2;
 
 /* ── STATE ───────────────────────────────────────────────────── */
