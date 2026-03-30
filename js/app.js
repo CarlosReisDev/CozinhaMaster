@@ -6,7 +6,7 @@
 /* ── CONFIG ─────────────────────────────────────────────────── */
 const FRAME_COUNT   = 172;
 const FRAME_SPEED   = 1.0;
-const IMAGE_SCALE        = 0.85; // desktop
+const IMAGE_SCALE        = 0.90; // desktop
 const IMAGE_SCALE_MOBILE = 0.50; // mobile — mais afastado, mostra mais laterais
 const FRAME_PATH    = 'frames/frame_%04d.webp';
 const PRELOAD_FIRST = 10;
@@ -254,8 +254,8 @@ function positionSections() {
     sec.style.top = topPx + 'px';
     // No mobile empurra o conteúdo para baixo — data-mobile-y sobrescreve o padrão
     const isMobile = window.innerWidth <= 768;
-    const mobileY  = sec.dataset.mobileY !== undefined ? parseFloat(sec.dataset.mobileY) : -20;
-    gsap.set(sec, { yPercent: isMobile ? mobileY : -50 });
+    const mobileY  = sec.dataset.mobileY !== undefined ? parseFloat(sec.dataset.mobileY) : -10;
+    gsap.set(sec, { yPercent: isMobile ? mobileY : -10 });
   });
 }
 
