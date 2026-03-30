@@ -60,15 +60,15 @@
         Cada componente escolhido com propósito.<br />
         <span class="hero-tagline-mono">Blend 80/20 · Pão Madero · Ingredientes Selecionados</span>
       </p>
-      <a href="#scroll-container" class="hero-cta" data-gsap="hero-cta">
-        Role para descobrir!
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 3v10M3 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
     </div>
     <div class="hero-logo-aside" data-gsap="hero-logo">
       <img src="assets/images/Logo.png" alt="CozinhaMaster Burger" />
+      <a href="#" class="hero-cta" id="hero-cta-btn" data-gsap="hero-cta">
+        Role para descobrir!
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+          <path d="M8 3v10M3 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
 
     <div class="hero-scroll-indicator" data-gsap="hero-scroll">
@@ -91,6 +91,21 @@
       BLEND 80/20&nbsp;&nbsp;·&nbsp;&nbsp;PÃO MADERO&nbsp;&nbsp;·&nbsp;&nbsp;SEM CONCESSÕES&nbsp;&nbsp;·&nbsp;&nbsp;INGREDIENTES DE PROCEDÊNCIA&nbsp;&nbsp;·&nbsp;&nbsp;ARTESANAL&nbsp;&nbsp;·&nbsp;&nbsp;BLEND 80/20&nbsp;&nbsp;·&nbsp;&nbsp;PÃO MADERO&nbsp;&nbsp;·&nbsp;&nbsp;SEM CONCESSÕES&nbsp;&nbsp;·&nbsp;&nbsp;
     </div>
   </div>
+
+  <!-- ░░ NAVEGAÇÃO POR SETAS ░░ -->
+  <nav class="section-nav" id="section-nav" aria-label="Navegar entre seções">
+    <button class="section-nav-btn" id="nav-prev" aria-label="Seção anterior">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 15L4 9l6-6M4 9h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="section-nav-dots" id="nav-dots"></div>
+    <button class="section-nav-btn" id="nav-next" aria-label="Próxima seção">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 5l6 6-6 6M16 11H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </nav>
 
   <!-- ░░ SCROLL CONTAINER — 800VH ░░ -->
   <div id="scroll-container">

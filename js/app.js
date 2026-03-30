@@ -454,6 +454,86 @@ function debounce(fn, wait) {
   return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), wait); };
 }
 
+/* ── SECTION NAV ─────────────────────────────────────────────── */
+function initSectionNav() {
+  const scrollEl  = document.getElementById('scroll-container');
+  const navEl     = document.getElementById('section-nav');
+  const btnPrev   = document.getElementById('nav-prev');
+  const btnNext   = document.getElementById('nav-next');
+  const dotsEl    = document.getElementById('nav-dots');
+
+  // Checkpoints fixos — posições ideais do vídeo para cada seção
+  const sections = [0.18, 0.37, 0.56, 0.755, 0.915].map(p => ({ enter: p, leave: p + 0.01 }));
+
+  // Cria dots
+  sections.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.dataset.index = i;
+    dotsEl.appendChild(dot);
+  });
+
+  const dots = dotsEl.querySelectorAll('.nav-dot');
+  let currentIndex = -1;
+
+  function scrollToSection(index) {
+    if (index < 0 || index >= sections.length) return;
+    const targetPct    = sections[index].enter;
+    const containerTop = scrollEl.offsetTop;
+    const targetPx     = containerTop + targetPct * scrollEl.offsetHeight;
+
+    if (lenis) {
+      lenis.scrollTo(targetPx, { duration: 1.6, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    } else {
+      window.scrollTo({ top: targetPx, behavior: 'smooth' });
+    }
+  }
+
+  // Expõe para o hero CTA
+  window._scrollToFirstSection = () => scrollToSection(0);
+
+  function updateNav(progress) {
+    // Seção ativa = última cujo checkpoint já foi passado
+    let active = -1;
+    sections.forEach((s, i) => {
+      if (progress >= s.enter) active = i;
+    });
+
+    // Sempre visível
+    const inScroll = true;
+    navEl.classList.toggle('visible', inScroll);
+
+    // Atualiza currentIndex sempre — não só na mudança de seção
+    currentIndex = active;
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === active));
+    btnPrev.disabled = active < 0;
+    btnNext.disabled = active >= sections.length - 1;
+  }
+
+  btnNext.addEventListener('click', () => {
+    const next = currentIndex < 0 ? 0 : currentIndex + 1;
+    scrollToSection(next);
+  });
+  btnPrev.addEventListener('click', () => {
+    if (currentIndex <= 0) {
+      if (lenis) lenis.scrollTo(0, { duration: 1.6, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      scrollToSection(currentIndex - 1);
+    }
+  });
+
+  // Conecta ao ScrollTrigger existente via callback
+  ScrollTrigger.create({
+    trigger: scrollEl,
+    start:   'top top',
+    end:     'bottom bottom',
+    scrub:   false,
+    onUpdate: self => updateNav(self.progress)
+  });
+}
+
 /* ── BOOTSTRAP ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   // Register GSAP plugin FIRST — before initLenis which references ScrollTrigger
@@ -461,5 +541,15 @@ document.addEventListener('DOMContentLoaded', () => {
   resizeCanvas();
   initLenis();
   initScrollTriggers();
+  initSectionNav();
   preloadFrames();
+
+  // Hero CTA → primeira seção (37%)
+  const heroCta = document.getElementById('hero-cta-btn');
+  if (heroCta) {
+    heroCta.addEventListener('click', e => {
+      e.preventDefault();
+      if (window._scrollToFirstSection) window._scrollToFirstSection();
+    });
+  }
 });
