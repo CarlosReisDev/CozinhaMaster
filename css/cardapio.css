@@ -1,0 +1,542 @@
+/* ============================================================
+   Cardápio — Cozinha Master
+   Design: glassmorphism cards + filter tabs + dark OLED
+   ============================================================ */
+
+/* ── BODY OVERRIDE ── */
+body {
+  min-height: 100vh;
+  padding-top: 0;
+}
+
+/* ── NAV ACTIVE STATE ── */
+.nav-active {
+  color: var(--text) !important;
+}
+
+/* ── NAVBAR ALWAYS SCROLLED ── */
+.navbar-pill {
+  background: rgba(0, 0, 0, 0.72) !important;
+  border-color: var(--border) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* ── CARDÁPIO HERO ── */
+.cardapio-hero {
+  padding: 9rem 8vw 5rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle accent blob behind hero */
+.cardapio-hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 55vw;
+  height: 55vw;
+  background: radial-gradient(circle, rgba(131, 15, 26, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cardapio-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cardapio-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  display: block;
+}
+
+.cardapio-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(3rem, 7vw, 7rem);
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  color: var(--text);
+}
+
+.cardapio-title em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.cardapio-subtitle {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.cardapio-subtitle-mono {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+}
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8vw;
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  padding: 0.5rem 0;
+}
+
+.filter-tabs::-webkit-scrollbar { display: none; }
+
+.filter-tab {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.3rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-quint);
+  min-height: 36px;
+}
+
+.filter-tab:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
+.filter-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.filter-count {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── MENU WRAP ── */
+.menu-wrap {
+  padding: 0 8vw 5rem;
+}
+
+/* ── MENU SECTION ── */
+.menu-section {
+  padding: 3.5rem 0 0;
+}
+
+.menu-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-section-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.menu-section-count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.menu-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── MENU CARD ── */
+.menu-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    border-color 0.35s var(--ease-quint),
+    background   0.35s var(--ease-quint),
+    transform    0.35s var(--ease-quint);
+}
+
+.menu-card:hover {
+  border-color: rgba(131, 15, 26, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-5px);
+}
+
+/* ── CARD IMAGE ── */
+.card-image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #0a0a0a;
+  flex-shrink: 0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.55s var(--ease-quint);
+}
+
+.menu-card:hover .card-image img {
+  transform: scale(1.06);
+}
+
+/* Gradient overlay — garante legibilidade da badge sobre a foto */
+.card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.10) 0%,
+    transparent        45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* Placeholder quando não há imagem */
+.card-image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a0a0c 100%);
+}
+
+.card-image-placeholder-icon {
+  font-size: 2.5rem;
+  color: rgba(131, 15, 26, 0.3);
+  user-select: none;
+}
+
+/* ── BADGE (dentro da imagem) ── */
+.card-badge {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  border-radius: 9999px;
+  line-height: 1;
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.badge-popular {
+  background: rgba(131, 15, 26, 0.75);
+  color: #fff;
+  border: 1px solid rgba(131, 15, 26, 0.5);
+}
+
+.badge-destaque {
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.badge-novo {
+  background: rgba(34, 197, 94, 0.75);
+  color: #fff;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.badge-chef {
+  background: rgba(180, 140, 20, 0.75);
+  color: #fff;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* ── CARD CONTENT ── */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+  padding: 1.4rem 1.6rem 0;
+}
+
+.card-name {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ── CARD FOOTER ── */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  margin-top: 1.2rem;
+  padding: 1rem 1.6rem 1.4rem;
+}
+
+.card-price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.card-category-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── SKELETON SECTION IMAGE ── */
+.skeleton-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+.skeleton-section-title {
+  height: 28px;
+  width: 200px;
+}
+
+/* ── FOOTER CTA ── */
+.cardapio-footer-cta {
+  border-top: 1px solid var(--border);
+  padding: 4rem 8vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.cardapio-footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-cta-text {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.footer-cta-meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+/* ── SKELETON LOADER ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-badge,
+.skeleton-line {
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-badge {
+  position: absolute;
+  top: 1.2rem; right: 1.2rem;
+  width: 60px; height: 18px;
+  border-radius: 9999px;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 0.6rem;
+  border-radius: 3px;
+}
+
+.skeleton-title  { height: 20px; width: 70%; }
+.skeleton-short  { width: 45%; }
+.skeleton-price  { height: 18px; width: 55px; }
+
+/* ── ERRO ── */
+.menu-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.menu-error-icon {
+  font-size: 2rem;
+  color: var(--accent);
+  opacity: 0.6;
+}
+
+.menu-error-text {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.menu-error-text code {
+  background: rgba(255,255,255,0.06);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+
+.menu-retry-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-quint);
+}
+
+.menu-retry-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ── EMPTY STATE ── */
+.menu-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.menu-empty-text {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 900px) {
+  .menu-section-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cardapio-hero {
+    padding: 7rem 6vw 3.5rem;
+  }
+
+  .filter-bar {
+    padding: 0 5vw;
+    height: 52px;
+  }
+
+  .filter-count { display: none; }
+
+  .menu-wrap {
+    padding: 0 5vw 4rem;
+  }
+
+  .menu-section-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card-image { aspect-ratio: 16 / 9; }
+
+  .cardapio-footer-inner {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .cta-button { width: 100%; text-align: center; }
+
+  .noise-overlay { display: none; }
+}

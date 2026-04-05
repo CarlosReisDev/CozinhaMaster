@@ -1,0 +1,45 @@
+# ============================================================
+# CozinhaMaster — Netlify Deploy Config
+# ============================================================
+
+[build]
+  publish = "."
+
+# ── REDIRECTS ────────────────────────────────────────────────
+# Garante HTTPS em produção
+[[redirects]]
+  from   = "http://cozinhamaster.com.br/*"
+  to     = "https://cozinhamaster.com.br/:splat"
+  status = 301
+  force  = true
+
+# ── SECURITY HEADERS ─────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Impede clickjacking (site em iframe de outro domínio)
+    X-Frame-Options = "DENY"
+
+    # Impede MIME sniffing (browser abrindo JS como HTML, etc.)
+    X-Content-Type-Options = "nosniff"
+
+    # Proteção XSS legada (browsers antigos)
+    X-XSS-Protection = "1; mode=block"
+
+    # Não vaza a URL completa do site no Referer para terceiros
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Força HTTPS por 1 ano e propaga para subdomínios
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+    # Desabilita APIs sensíveis do browser (câmera, mic, GPS)
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+    # Content-Security-Policy — controla de onde cada recurso pode vir
+    # Notas:
+    #   - 'unsafe-inline' em style-src: necessário para GSAP (adiciona inline styles nas animações)
+    #   - cdn.jsdelivr.net: GSAP, Lenis, ScrollTrigger
+    #   - fonts.googleapis.com / fonts.gstatic.com: Space Grotesk + Space Mono
+    #   - images.unsplash.com: fotos do cardápio (substituir por domínio próprio quando tiver)
+    #   - *.supabase.co: API do banco de dados
+    Content-Security-Policy = "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' images.unsplash.com data: blob:; connect-src 'self' *.supabase.co; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
