@@ -284,7 +284,7 @@ function setupSectionAnimations() {
     const children = section.querySelectorAll(
       '.section-label, .section-heading, .section-body, .section-note, ' +
       '.cta-heading, .cta-body, .cta-button, .cta-meta, ' +
-      '.manifesto-block, .stat, .cta-inner > *'
+      '.manifesto-block, .stat, .cta-inner > :not(.cta-cardapio-btn)'
     );
 
     const tl = gsap.timeline({ paused: true });

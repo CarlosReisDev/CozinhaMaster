@@ -2,96 +2,125 @@
 
 ## O que já está no banco
 
-| Chave | Exemplo |
-|---|---|
-| `whatsapp_url` | https://wa.me/5531998891369 |
-| `instagram_url` | https://instagram.com/cozinhamaster |
-| `address_line1` | Av. Palmeiras, 463 |
-| `address_line2` | Masterville — Sarzedo/MG |
-| `hours_morning` | Ter–Dom: 07h às 14h |
-| `hours_evening` | Qua–Seg: 16h às 23h |
-| `hours_closed` | Terça (noturno): Fechado |
+| Chave | Valor atual | Onde é usado |
+|---|---|---|
+| `whatsapp_url` | https://wa.me/5531998891369 | `.wa-link` href + `.wa-link` na landing |
+| `instagram_url` | https://instagram.com/cozinhamaster | `.ig-link` href |
+| `address_line1` | Av. Palmeiras, 463 | `data-cfg="address_line1"` |
+| `address_line2` | Masterville — Sarzedo/MG | `data-cfg="address_line2"` |
+| `hours_evening` | Qua–Dom: 16h–23h | `data-cfg="hours_evening"` |
+
+> `hours_morning` e `hours_closed` foram **deletados** — hamburgueria não abre de manhã.
 
 ---
 
 ## O que vale adicionar
 
-### ✅ Alta prioridade — muda com frequência
+### Fase 1 — Alta prioridade (muda com frequência)
+
+| Chave proposta | Valor atual | Onde aparece no HTML |
+|---|---|---|
+| `stat_patty_g` | 160 | `<span data-value="160" data-suffix="g">` na seção stats |
+| `stat_anos` | 7 | `<span data-value="7">` na seção stats |
+| `stat_burgers` | 15 | `<span data-value="15" data-suffix="+">` na seção stats |
+| `stat_rating` | 4.9 | `<span data-value="4.9" data-decimals="1">` na seção stats |
+| `manifesto_common` | A maioria entrega velocidade. | `.manifesto-common` |
+| `manifesto_diff` | Nós entregamos memória. | `.manifesto-diff` |
+| `footer_tagline` | Artesanal. Sem Concessões. | `.footer-tagline` |
+
+> Stats mudam com o tempo (anos de operação sobe todo ano, menu cresce). São os mais chatos de editar no HTML porque têm `data-value` além do `textContent`.
+
+### Fase 2 — Média prioridade (muda às vezes)
 
 | Chave proposta | Valor atual | Onde aparece |
 |---|---|---|
-| `stat_patty_g` | 160 | Stats — "Xg / Patty artesanal" |
-| `stat_anos` | 7 | Stats — "X anos / Aperfeiçoando receitas" |
-| `stat_burgers` | 15 | Stats — "X+ / Hambúrgueres no menu" |
-| `stat_rating` | 4.9 | Stats — "X★ / Avaliação média" |
+| `cta_heading` | Sua mesa espera por você | `.cta-heading` (seção CTA final) |
+| `cta_body` | Reserve agora e garanta... | `.cta-body` |
 
-> Os stats mudam com o tempo (anos de operação aumenta todo ano, menu cresce, etc.).
-> São os mais chatos de editar no HTML porque têm atributo `data-value` além do texto.
-
----
-
-### ✅ Média prioridade — muda às vezes
-
-| Chave proposta | Valor atual | Onde aparece |
-|---|---|---|
-| `cta_heading` | Sua mesa espera por você | Seção CTA (final do scroll) |
-| `cta_body` | Reserve agora e garanta... | Subtexto do CTA |
-| `manifesto_common` | A maioria entrega velocidade. | Seção Manifesto |
-| `manifesto_diff` | Nós entregamos memória. | Seção Manifesto (destaque) |
-| `footer_tagline` | Artesanal. Sem Concessões. | Footer, abaixo da logo |
-
----
-
-### ⚠️ Baixa prioridade — raramente muda
-
-| Chave proposta | Valor atual | Motivo para não priorizar |
-|---|---|---|
-| `section_001_heading` | Onde a brasa encontra a arte | Copy criativo — edição pontual |
-| `section_001_body` | Cada hambúrguer nasce... | Texto longo, formatação sensível |
-| `section_002_heading` | Carne. Fogo. Perfeição. | Idem |
-| `section_003_heading` | Do pão ao molho secreto | Idem |
-| `hero_tagline_mono` | Blend Exclusivo · Autorais · Sarzedo/MG | Idem |
-
-> Esses textos são possíveis de colocar no banco, mas o ganho prático é baixo —
-> a chance de querer editar um headline criativo pelo painel é pequena,
-> e qualquer erro de digitação quebra o visual da seção.
-
----
-
-### ❌ Não faz sentido colocar no banco
+### Não faz sentido colocar no banco
 
 | Item | Motivo |
 |---|---|
-| Labels de navegação ("Cardápio", "Nossa História") | Parte da estrutura do site |
-| Textos com HTML interno (ex: `<br />`, `<em>`) | Risco de XSS, formatação quebraria |
-| Ano do copyright no footer | Melhor atualizar com `new Date().getFullYear()` em JS |
-| Nomes das seções (001, 002...) | Estrutura visual, não conteúdo |
+| Headings de seção com `<em>` ou `<br />` | Risco de XSS; `esc()` quebraria a formatação |
+| Labels de navegação ("Cardápio", "Nossa História") | Estrutura do site, não conteúdo |
+| Ano do copyright | Melhor usar `new Date().getFullYear()` em JS |
+| Textos de hero de scroll-stop | Copy criativo, edição pontual pelo dev |
 
 ---
 
-## Implementação sugerida
+## Como implementar a Fase 1
 
-Quando for implementar, o processo é:
+O `site-config.js` já aplica `data-cfg` automaticamente via:
+```js
+document.querySelectorAll('[data-cfg]').forEach(el => {
+  const val = config[el.dataset.cfg];
+  if (val) el.textContent = val;
+});
+```
 
-1. Adicionar as linhas no `seed.sql` (INSERT INTO site_config)
-2. Adicionar `data-cfg="chave"` nos elementos HTML correspondentes
-3. O `site-config.js` já aplica automaticamente via `data-cfg` — sem alteração no JS
+**Passos:**
 
-**Custo de implementação:** baixo para stats e manifesto (4-5 atributos simples).
-O CTA heading tem `<br />` e `<em>` no HTML atual — precisaria ser dividido em
-`cta_heading_line1` e `cta_heading_line2`, ou simplificado para uma linha.
+### 1. Inserir no banco (Supabase SQL Editor)
+```sql
+INSERT INTO site_config (key, value) VALUES
+  ('stat_patty_g',    '160'),
+  ('stat_anos',       '7'),
+  ('stat_burgers',    '15'),
+  ('stat_rating',     '4.9'),
+  ('manifesto_common','A maioria entrega velocidade.'),
+  ('manifesto_diff',  'Nós entregamos memória.'),
+  ('footer_tagline',  'Artesanal. Sem Concessões.');
+```
+
+### 2. Adicionar `data-cfg` nos elementos do `index.html`
+
+```html
+<!-- Stats (atenção: data-cfg vai no elemento que contém o número,
+     mas data-value precisa ser atualizado junto pelo JS) -->
+<span class="stat-value" data-value="160" data-suffix="g" data-cfg="stat_patty_g">160</span>
+<span class="stat-value" data-value="7" data-cfg="stat_anos">7</span>
+<span class="stat-value" data-value="15" data-suffix="+" data-cfg="stat_burgers">15</span>
+<span class="stat-value" data-value="4.9" data-decimals="1" data-cfg="stat_rating">4.9</span>
+
+<!-- Manifesto -->
+<span class="manifesto-common" data-cfg="manifesto_common">A maioria entrega velocidade.</span>
+<span class="manifesto-diff" data-cfg="manifesto_diff">Nós entregamos memória.</span>
+
+<!-- Footer -->
+<span class="footer-tagline" data-cfg="footer_tagline">Artesanal. Sem Concessões.</span>
+```
+
+### 3. Atualizar `site-config.js` para sincronizar `data-value` nos stats
+
+Os stats usam `data-value` para a animação GSAP. Quando o banco retornar um valor diferente, precisa atualizar tanto o `textContent` quanto o atributo:
+
+```js
+// No site-config.js, após aplicar data-cfg normalmente:
+const statKeys = ['stat_patty_g', 'stat_anos', 'stat_burgers', 'stat_rating'];
+statKeys.forEach(key => {
+  if (!config[key]) return;
+  document.querySelectorAll(`[data-cfg="${key}"]`).forEach(el => {
+    el.dataset.value = config[key]; // atualiza data-value para GSAP
+    el.textContent   = config[key];
+  });
+});
+```
+
+**Custo:** ~15 linhas de JS + 7 INSERTs no banco. Baixo.
 
 ---
 
-## Recomendação
+## Ordem recomendada
 
-Implementar **em duas fases:**
+1. **Agora (pré-deploy):** Fase 1 stats + manifesto + footer_tagline
+2. **Pós-deploy se surgir necessidade:** Fase 2 textos de CTA
+3. **Nunca:** headings com markup HTML
 
-**Fase 1 (vale fazer agora):**
-- `stat_patty_g`, `stat_anos`, `stat_burgers`, `stat_rating`
-- `manifesto_common`, `manifesto_diff`
-- `footer_tagline`
+---
 
-**Fase 2 (opcional, se surgir necessidade):**
-- Textos do CTA
-- Headings das seções de scroll
+## Como o cliente edita
+
+1. Acessa `app.supabase.com`
+2. Table Editor → `site_config`
+3. Edita o `value` da linha desejada
+4. Site atualiza na próxima visita (sem cache para site_config)

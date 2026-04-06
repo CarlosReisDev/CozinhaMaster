@@ -440,7 +440,7 @@ img { display: block; max-width: 100%; }
 /* ── SCROLL CONTAINER ───────────────────────────────────────── */
 #scroll-container {
   position: relative;
-  height: 800vh;
+  height: 900vh;
   z-index: 15;
   pointer-events: none;
 }
@@ -678,6 +678,32 @@ img { display: block; max-width: 100%; }
 
 .cta-button--primary svg { flex-shrink: 0; }
 
+/* Botão grande "Conheça nosso cardápio" — fora do GSAP stagger */
+.cta-cardapio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1.4rem 3.2rem;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 28px rgba(131, 15, 26, 0.45), 0 0 60px rgba(131, 15, 26, 0.15);
+  transition: all 0.3s var(--ease-quint);
+  align-self: flex-start;
+}
+
+.cta-cardapio-btn:hover {
+  background: #a93226;
+  transform: scale(1.04);
+  box-shadow: 0 0 40px rgba(131, 15, 26, 0.6), 0 0 80px rgba(131, 15, 26, 0.25);
+}
+
 .cta-button--ghost {
   background: transparent;
   color: var(--text);
@@ -711,7 +737,7 @@ img { display: block; max-width: 100%; }
   z-index: 20;
   background: #000000;
   overflow: hidden;
-  padding: 5rem 8vw 2.5rem;
+  padding: 2rem 8vw 2.5rem;
 }
 
 /* Linha gradiente no topo */
@@ -957,7 +983,7 @@ img { display: block; max-width: 100%; }
 /* ── MOBILE ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   /* Scroll container maior para as seções não se empilharem */
-  #scroll-container { height: 650vh; }
+  #scroll-container { height: 600vh; }
 
   /* Seções ocupam a largura toda, sem recuo lateral assimétrico */
   .scroll-section {
@@ -1041,7 +1067,7 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-  #scroll-container { height: 700vh; }
+  #scroll-container { height: 550vh; }
   .footer-info { grid-template-columns: 1fr; }
   .cta-actions { flex-direction: column; }
   .cta-button { text-align: center; width: 100%; }
