@@ -3,6 +3,34 @@
    Layout: seções por categoria + scroll spy nos tabs
    ============================================================ */
 
+/* ── CACHE localStorage (stale-while-revalidate) ────────────────
+   Estratégia: mostra cache instantâneo SEMPRE que existir,
+   e revalida em background a cada visita.
+   Resultado: 1ª visita ever = fetch normal. Todas as outras = instantâneo.
+
+   Para DESATIVAR: mude CACHE_ENABLED para false
+   Para forçar refresh manual: localStorage.removeItem('cm_menu_v1')
+   ------------------------------------------------------------ */
+const CACHE_ENABLED = true;
+const CACHE_KEY     = 'cm_menu_v1';
+
+function getCached() {
+  if (!CACHE_ENABLED) return null;
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { categories, items } = JSON.parse(raw);
+    return { categories, items };
+  } catch (_) { return null; }
+}
+
+function setCache(categories, items) {
+  if (!CACHE_ENABLED) return;
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ categories, items }));
+  } catch (_) {} // silencioso — modo privado ou quota excedida
+}
+
 /* ── REFS ───────────────────────────────────────────────────── */
 const menuWrap = document.getElementById('menu-wrap');
 const tabsWrap = document.getElementById('filter-tabs');
@@ -10,9 +38,6 @@ const countEl  = document.getElementById('filter-count');
 const header   = document.getElementById('site-header');
 
 /* ── HELPERS ────────────────────────────────────────────────── */
-function formatPrice(value) {
-  return `A partir de R$ ${Number(value).toFixed(2).replace('.', ',')}`;
-}
 
 function esc(str) {
   if (!str) return '';
@@ -57,10 +82,6 @@ function buildCard(item) {
   const orderUrl = item.saipos_url && safeUrl(item.saipos_url, ['https:'])
     ? esc(item.saipos_url) : null;
 
-  const orderBtn = orderUrl
-    ? `<a href="${orderUrl}" class="card-order-btn" target="_blank" rel="noopener">Pedir</a>`
-    : '';
-
   const article = document.createElement('article');
   article.className = 'menu-card';
   article.innerHTML = `
@@ -69,10 +90,10 @@ function buildCard(item) {
       <h3 class="card-name">${esc(item.name)}</h3>
       ${item.description ? `<p class="card-desc">${esc(item.description)}</p>` : ''}
     </div>
+    ${orderUrl ? `
     <div class="card-footer">
-      <span class="card-price">${formatPrice(item.price)}</span>
-      ${orderBtn}
-    </div>`;
+      <a href="${orderUrl}" class="card-order-btn" target="_blank" rel="noopener">Pedir</a>
+    </div>` : ''}`;
   return article;
 }
 
@@ -138,7 +159,11 @@ function renderTabs(categories) {
     } else {
       const target = document.getElementById(`cat-${slug}`);
       if (target) {
-        const offset = target.getBoundingClientRect().top + window.scrollY - 80;
+        const filterBar = document.querySelector('.filter-bar');
+        const clearance = filterBar
+          ? filterBar.offsetTop + filterBar.offsetHeight + 8
+          : 140;
+        const offset = target.getBoundingClientRect().top + window.scrollY - clearance;
         window.scrollTo({ top: offset, behavior: 'smooth' });
       }
     }
@@ -211,33 +236,57 @@ function showError(msg) {
 }
 
 /* ── FETCH ──────────────────────────────────────────────────── */
+async function fetchFromSupabase() {
+  const headers = {
+    'apikey':        SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  };
+  const [catsRes, itemsRes] = await Promise.all([
+    fetch(`${SUPABASE_URL}/rest/v1/menu_categories?select=slug,name&order=display_order.asc`, { headers }),
+    fetch(`${SUPABASE_URL}/rest/v1/menu_items?select=category_slug,name,description,badge,image_url,saipos_url&order=display_order.asc`, { headers }),
+  ]);
+  if (!catsRes.ok || !itemsRes.ok) throw new Error(`Erro ${catsRes.status}`);
+  return {
+    categories: await catsRes.json(),
+    items:      await itemsRes.json(),
+  };
+}
+
 async function loadMenu() {
   if (!SUPABASE_URL || SUPABASE_URL.startsWith('COLE_')) {
     showError('Configuração do banco pendente.');
     return;
   }
 
+  const cached = getCached();
+
+  if (cached) {
+    // Renderiza instantâneo do cache
+    renderTabs(cached.categories);
+    renderSections(cached.categories, cached.items);
+
+    // Revalida em background — re-renderiza imediatamente se dados mudaram
+    fetchFromSupabase()
+      .then(({ categories, items }) => {
+        const fresh  = JSON.stringify({ categories, items });
+        const stored = JSON.stringify({ categories: cached.categories, items: cached.items });
+        if (fresh !== stored) {
+          setCache(categories, items);
+          renderTabs(categories);
+          renderSections(categories, items);
+        }
+      })
+      .catch(() => {}); // falha silenciosa — cache anterior continua válido
+    return;
+  }
+
+  // Sem cache ainda (1ª visita ever) — busca normalmente com skeleton
   showSkeleton();
-
-  const headers = {
-    'apikey':        SUPABASE_ANON_KEY,
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-  };
-
   try {
-    const [catsRes, itemsRes] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/menu_categories?select=slug,name&order=display_order.asc`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/menu_items?select=category_slug,name,description,price,badge,image_url,saipos_url&order=display_order.asc`, { headers }),
-    ]);
-
-    if (!catsRes.ok || !itemsRes.ok) throw new Error(`Erro ${catsRes.status}`);
-
-    const categories = await catsRes.json();
-    const items      = await itemsRes.json();
-
+    const { categories, items } = await fetchFromSupabase();
+    setCache(categories, items);
     renderTabs(categories);
     renderSections(categories, items);
-
   } catch (err) {
     console.error('[Cardápio]', err);
     showError('Não foi possível carregar o cardápio.<br>Verifique sua conexão e tente novamente.');

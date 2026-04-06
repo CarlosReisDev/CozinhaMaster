@@ -1009,7 +1009,19 @@ img { display: block; max-width: 100%; }
 
   .hero-scroll-indicator { display: none; }
 
-  .navbar-links { display: none; }
+  .navbar-links {
+    gap: 0;
+    margin-left: auto;
+  }
+
+  .navbar-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+  }
+
+  .navbar-pill {
+    gap: 0.75rem;
+  }
 
   /* Marquee menor no mobile */
   .marquee-text { font-size: clamp(3.5rem, 18vw, 7rem); }
