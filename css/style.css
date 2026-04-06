@@ -826,6 +826,12 @@ img { display: block; max-width: 100%; }
   animation: pulse 2s ease-in-out infinite;
 }
 
+.status-dot--closed {
+  background: #666;
+  box-shadow: 0 0 6px #444;
+  animation: none;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 8px #22c55e; }
   50% { opacity: 0.5; box-shadow: 0 0 20px #22c55e; }
@@ -837,6 +843,10 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.12em;
   color: #22c55e;
   text-transform: uppercase;
+}
+
+.status-text--closed {
+  color: #666;
 }
 
 .footer-bottom {

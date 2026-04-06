@@ -4,6 +4,37 @@
    e aplica no DOM. O config.js serve de fallback imediato.
    ============================================================ */
 
+/* ── STATUS DE FUNCIONAMENTO ─────────────────────────────────
+   Horários (fuso America/Sao_Paulo):
+     Noite:  Qua–Dom  16h–23h  (days 0,3,4,5,6)
+   --------------------------------------------------------- */
+function updateOpenStatus() {
+  const now  = new Date();
+  const fmt  = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+  const dayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const day  = dayMap[parts.weekday];
+  const mins = parseInt(parts.hour) * 60 + parseInt(parts.minute);
+
+  const isOpen = [0, 3, 4, 5, 6].includes(day) && mins >= 960 && mins < 1380; // 16h–23h Qua–Dom
+
+  document.querySelectorAll('.status-dot').forEach(el => {
+    el.classList.toggle('status-dot--closed', !isOpen);
+  });
+  document.querySelectorAll('.status-text').forEach(el => {
+    el.textContent = isOpen ? 'Aberto agora' : 'Fechado';
+    el.classList.toggle('status-text--closed', !isOpen);
+  });
+}
+
+updateOpenStatus();
+
 function safeUrl(url, allowedProtocols) {
   try {
     return allowedProtocols.includes(new URL(url).protocol);
@@ -55,20 +86,12 @@ function safeUrl(url, allowedProtocols) {
     }
 
     // Horários
-    if (cfg.hours_morning) {
-      document.querySelectorAll('[data-cfg="hours_morning"]')
-        .forEach(el => { el.textContent = cfg.hours_morning; });
-    }
     if (cfg.hours_evening) {
       document.querySelectorAll('[data-cfg="hours_evening"]')
         .forEach(el => { el.textContent = cfg.hours_evening; });
     }
-    if (cfg.hours_closed) {
-      document.querySelectorAll('[data-cfg="hours_closed"]')
-        .forEach(el => { el.textContent = cfg.hours_closed; });
-    }
 
-  } catch (_) {
+} catch (_) {
     // Silencioso — config.js já setou os valores padrão
   }
 })();

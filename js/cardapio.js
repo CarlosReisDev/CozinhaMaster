@@ -54,6 +54,13 @@ function buildCard(item) {
          ${badge}
        </div>`;
 
+  const orderUrl = item.saipos_url && safeUrl(item.saipos_url, ['https:'])
+    ? esc(item.saipos_url) : null;
+
+  const orderBtn = orderUrl
+    ? `<a href="${orderUrl}" class="card-order-btn" target="_blank" rel="noopener">Pedir</a>`
+    : '';
+
   const article = document.createElement('article');
   article.className = 'menu-card';
   article.innerHTML = `
@@ -64,6 +71,7 @@ function buildCard(item) {
     </div>
     <div class="card-footer">
       <span class="card-price">${formatPrice(item.price)}</span>
+      ${orderBtn}
     </div>`;
   return article;
 }
@@ -219,7 +227,7 @@ async function loadMenu() {
   try {
     const [catsRes, itemsRes] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/menu_categories?select=slug,name&order=display_order.asc`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/menu_items?select=category_slug,name,description,price,badge,image_url&order=display_order.asc`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/menu_items?select=category_slug,name,description,price,badge,image_url,saipos_url&order=display_order.asc`, { headers }),
     ]);
 
     if (!catsRes.ok || !itemsRes.ok) throw new Error(`Erro ${catsRes.status}`);

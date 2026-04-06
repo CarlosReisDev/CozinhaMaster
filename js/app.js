@@ -359,6 +359,9 @@ function initCounters() {
     const target   = parseFloat(el.dataset.value);
     const decimals = parseInt(el.dataset.decimals || '0');
 
+    // Define o valor final no DOM antes de animar — gsap.from vai de 0 até este valor
+    el.textContent = target.toFixed(decimals);
+
     gsap.from(el, {
       textContent: 0,
       duration: 2,

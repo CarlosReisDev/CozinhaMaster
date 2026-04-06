@@ -97,7 +97,7 @@ body {
   height: 56px;
   border-bottom: 1px solid var(--border);
   position: sticky;
-  top: 0;
+  top: 76px; /* abaixo do navbar-pill (fixed top:1.5rem + altura ~52px) */
   z-index: 50;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(20px);
@@ -153,6 +153,7 @@ body {
 /* ── MENU WRAP ── */
 .menu-wrap {
   padding: 0 8vw 5rem;
+  min-height: 40vh;
 }
 
 /* ── MENU SECTION ── */
@@ -345,12 +346,33 @@ body {
   letter-spacing: -0.01em;
 }
 
-.card-category-label {
+/* ── BOTÃO PEDIR ── */
+.card-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.2);
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  transition:
+    background 0.25s var(--ease-quint),
+    transform  0.2s var(--ease-quint),
+    box-shadow 0.25s var(--ease-quint);
+  white-space: nowrap;
+}
+
+.card-order-btn:hover {
+  background: transparent;
+  color: var(--accent);
+  transform: scale(1.04);
+  box-shadow: 0 0 16px rgba(131, 15, 26, 0.35);
 }
 
 /* ── SKELETON SECTION IMAGE ── */
@@ -516,6 +538,7 @@ body {
   .filter-bar {
     padding: 0 5vw;
     height: 52px;
+    top: 68px;
   }
 
   .filter-count { display: none; }
